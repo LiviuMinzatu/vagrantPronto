@@ -1,0 +1,8 @@
+!.gitignore
+.DS_Store
+*.log
+*.swp
+.vagrant/
+.*
+minutiCommentati.py
+.DS_Store
