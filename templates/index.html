@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>VagrantPronto</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #90caf9;
+    }
+
+    form {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      max-width: 800px;
+      margin: auto;
+    }
+
+    fieldset {
+      border: 1px solid #333;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    legend {
+      font-weight: bold;
+      padding: 0 10px;
+      color: #81c784;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 500;
+      color: #e0e0e0;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 6px;
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      box-sizing: border-box;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    input[type="submit"],
+    button,
+    .download-zip {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    input[type="submit"]:hover,
+    button:hover,
+    .download-zip:hover {
+      background-color: #45a049;
+    }
+
+    .tool-button {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .tool-button input[type="checkbox"] {
+      display: none;
+    }
+
+    .tool-button label {
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+    }
+
+    .tool-button input[type="checkbox"]:checked + label {
+      background-color: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+
+    pre {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      border: 1px solid #333;
+      color: #cfd8dc;
+      margin-top: 20px;
+    }
+
+    a {
+      color: #64b5f6;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    #preview-toggle {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>VagrantPronto</h1>
+
+  <form method="post">
+    <fieldset>
+      <legend>Impostazioni di base</legend>
+      <label>Nome VM:</label>
+      <input type="text" name="vm_name" placeholder="default-vm">
+
+      <label>Box:</label>
+      <select name="box">
+        <option value="ubuntu/focal64">Ubuntu 20.04</option>
+        <option value="ubuntu/jammy64">Ubuntu 22.04</option>
+      </select>
+    </fieldset>
+
+    <fieldset>
+      <legend>Rete</legend>
+      <label><input type="checkbox" name="use_dhcp" id="use_dhcp" onchange="document.getElementById('ip_input').disabled = this.checked;"> Usa DHCP</label>
+
+      <label>IP (se statico):</label>
+      <input type="text" name="ip" id="ip_input">
+    </fieldset>
+
+    <fieldset>
+      <legend>Risorse</legend>
+      <label>Porta SSH (host):</label>
+      <input type="text" name="port" placeholder="2222">
+
+      <label>CPU:</label>
+      <input type="number" name="cpu" placeholder="2">
+
+      <label>RAM (MB):</label>
+      <input type="number" name="ram" placeholder="2048">
+
+      <label><input type="checkbox" name="provision" checked> Esegui update/upgrade</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Strumenti DevOps</legend>
+      <div class="tool-button">
+        {% for tool in ['git', 'jenkins', 'docker', 'helm', 'kind', 'ansible', 'kubectl', 'python3'] %}
+          <input type="checkbox" id="{{ tool }}" name="tools" value="{{ tool }}">
+          <label for="{{ tool }}">{{ tool.capitalize() }}</label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <input type="submit" value="Genera">
+  </form>
+
+  {% if vagrantfile %}
+    <div id="preview-toggle">
+      <label><input type="checkbox" id="togglePreview" onchange="togglePreviews()"> Mostra anteprima del codice</label>
+    </div>
+
+    <div id="outputPreviews" class="hidden">
+      <h2 class="center">Output generato da VagrantPronto</h2>
+      <pre id="vagrantfile">{{ vagrantfile.content }}</pre>
+      <div class="center">
+        <button onclick="copyToClipboard('vagrantfile')">Copia Vagrantfile</button><br>
+        <a href="/download/{{ vagrantfile.name }}/{{ vagrantfile.name }}_Vagrantfile">Scarica Vagrantfile</a>
+      </div>
+
+      {% if playbook_content %}
+        <h3 class="center">Playbook Ansible</h3>
+        <pre id="playbook">{{ playbook_content }}</pre>
+        <div class="center">
+          <button onclick="copyToClipboard('playbook')">Copia Playbook</button><br>
+          <a href="/download/{{ vagrantfile.name }}/playbook.yml">Scarica Playbook</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="center">
+      <a class="download-zip" href="/download_zip/{{ vagrantfile.name }}" title="Scarica Vagrantfile, playbook e script"> Scarica tutto in ZIP</a>
+    </div>
+
+    <script>
+      function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(function () {
+          alert("Contenuto copiato!");
+        }, function (err) {
+          alert("Errore: " + err);
+        });
+      }
+
+      function togglePreviews() {
+        const box = document.getElementById('outputPreviews');
+        box.classList.toggle('hidden');
+      }
+    </script>
+  {% endif %}
+
+</body>
+</html>
