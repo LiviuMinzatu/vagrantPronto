@@ -43,14 +43,13 @@ Poi apri il browser su [http://localhost:5050](http://localhost:5050)
 progetto/
 ├── app.py                  # App Flask
 ├── script.sh               # Script shell incluso nello ZIP
-├── templates/
+├── templates/              # Pagine
 │   └── index.html          # Interfaccia utente
-├── playbook_builder/
-│   ├── __init__.py
+├── playbook_builder/       # Generatore di playbook
+│   ├── __init__.py         # Serve. 
 │   └── generator.py        # Generatore del playbook Ansible
 ├── generated/              # Output dei file generati
-├── Dockerfile              # (opzionale) per containerizzazione
-└── requirements.txt        # (opzionale) per gestione dipendenze
+
 ```
 
 ---
