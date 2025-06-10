@@ -159,6 +159,9 @@
         <option value="ubuntu/jammy64">Ubuntu 22.04</option>
       </select>
     </fieldset>
+    <!-- Form HTML con metodo POST per inviare le impostazioni base della macchina virtuale.
+     Il fieldset raccoglie i campi per il nome della VM e la box Vagrant da usare,
+     permettendo di scegliere tra Ubuntu 20.04 e 22.04. (per oraaaa)-->
 
     <fieldset>
       <legend>Rete</legend>
@@ -167,6 +170,9 @@
       <label>IP (se statico):</label>
       <input type="text" name="ip" id="ip_input">
     </fieldset>
+    <!-- Fieldset per la configurazione della rete della VM.
+     Include un checkbox per abilitare l'uso del DHCP: se selezionato, disabilita il campo IP.
+     L'utente può specificare un IP statico se il DHCP non è selezionato. -->
 
     <fieldset>
       <legend>Risorse</legend>
@@ -181,6 +187,9 @@
 
       <label><input type="checkbox" name="provision" checked> Esegui update/upgrade</label>
     </fieldset>
+    <!-- Fieldset per configurare le risorse assegnate alla VM.
+     Permette di specificare la porta SSH da esporre sull'host, il numero di CPU e la quantità di RAM.
+     Include anche un'opzione per abilitare uno script di provisioning che esegue update/upgrade del sistema. -->
 
     <fieldset>
       <legend>Strumenti DevOps</legend>
@@ -191,14 +200,22 @@
         {% endfor %}
       </div>
     </fieldset>
+    <!-- Fieldset per la selezione degli strumenti DevOps da installare nella VM.
+     Ogni checkbox rappresenta un tool tra quelli elencati (es. Git, Docker, Jenkins, ecc.).
+     L'elenco viene generato dinamicamente usando un ciclo Jinja2. -->
 
     <input type="submit" value="Genera">
-  </form>
+    <!-- Pulsante per inviare il form e generare i file in base alle impostazioni selezionate. -->
+
+  </form> <!-- Fine form -->
+
 
   {% if vagrantfile %}
     <div id="preview-toggle">
       <label><input type="checkbox" id="togglePreview" onchange="togglePreviews()"> Mostra anteprima del codice</label>
     </div>
+    <!-- Se è stato generato un Vagrantfile, mostra un checkbox per attivare/disattivare l'anteprima del codice.
+     L'elemento è visibile solo dopo la generazione e usa una funzione JS per gestire la visualizzazione. -->
 
     <div id="outputPreviews" class="hidden">
       <h2 class="center">Output generato da VagrantPronto</h2>
@@ -207,6 +224,9 @@
         <button onclick="copyToClipboard('vagrantfile')">Copia Vagrantfile</button><br>
         <a href="/download/{{ vagrantfile.name }}/{{ vagrantfile.name }}_Vagrantfile">Scarica Vagrantfile</a>
       </div>
+      <!-- Contenitore nascosto per l'anteprima del Vagrantfile generato.
+     Mostra il contenuto del file in un blocco <pre>, con un pulsante per copiarlo negli appunti
+     e un link per scaricarlo direttamente. Visibile solo se il file è stato generato. -->
 
       {% if playbook_content %}
         <h3 class="center">Playbook Ansible</h3>
@@ -216,11 +236,17 @@
           <a href="/download/{{ vagrantfile.name }}/playbook.yml">Scarica Playbook</a>
         </div>
       {% endif %}
+      <!-- Se è stato generato un playbook Ansible, mostra un'anteprima del contenuto in un blocco <pre>.
+     Include un pulsante per copiarlo negli appunti e un link per scaricarlo.
+     Questo blocco è visibile solo se sono stati selezionati strumenti DevOps. -->
+
     </div>
 
     <div class="center">
       <a class="download-zip" href="/download_zip/{{ vagrantfile.name }}" title="Scarica Vagrantfile, playbook e script"> Scarica tutto in ZIP</a>
     </div>
+    <!-- Link per scaricare un archivio ZIP contenente tutti i file generati (Vagrantfile, playbook e script.sh ).
+     Il file viene generato dinamicamente sulla base del nome della VM. -->
 
     <script>
       function copyToClipboard(elementId) {
@@ -238,6 +264,11 @@
       }
     </script>
   {% endif %}
+  <!-- Script JavaScript con due funzioni:
+     - copyToClipboard(elementId): copia negli appunti il contenuto testuale di un elemento HTML, identificato tramite ID,
+       utilizzando l’API Clipboard; mostra un alert di conferma o errore.
+     - togglePreviews(): mostra o nasconde il blocco di anteprima del codice alternando la classe CSS "hidden". -->
+
 
 </body>
 </html>
