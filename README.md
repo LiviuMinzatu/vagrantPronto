@@ -46,7 +46,7 @@ progetto/
 ├── templates/              # Pagine
 │   └── index.html          # Interfaccia utente
 ├── playbook_builder/       # Generatore di playbook
-│   ├── __init__.py         # Serve. 
+│   ├── __init__.py         # Serve. Questo perche se non c'è, nel app.py non viene riconosciuto come modulo 
 │   └── generator.py        # Generatore del playbook Ansible
 ├── generated/              # Output dei file generati
 
@@ -58,7 +58,7 @@ progetto/
 
 - Python 3.8+
 - Flask
-- (opzionale) Docker
+- (opzionale) Docker 
 
 ---
 
@@ -75,3 +75,18 @@ Realizzato da freddo18
 Docker Hub: [freddo18/vagrantpronto](https://hub.docker.com/r/freddo18/vagrantpronto)
 
 ---
+
+## Sviluppi futuri
+
+Questo progetto rappresenta solo la base di partenza per un sistema più completo e versatile.
+
+Sono previsti aggiornamenti futuri che includeranno:
+
+- Deploy online su un server pubblico con dominio accessibile da qualsiasi dispositivo, senza necessità di esecuzione locale
+- Supporto per nuove distribuzioni oltre Ubuntu, come Debian, CentOS e Rocky Linux
+- Rework completo del codice sorgente per una struttura più modulare e scalabile, con il supporto a diverse architetture operative
+- Sistema di gestione delle utenze, con salvataggio e recupero dei progetti generati
+- Integrazione di funzionalità avanzate per il provisioning e il controllo dei workflow DevOps
+
+Lo sviluppo è attivo e aperto a suggerimenti, contributi o segnalazioni.
+
